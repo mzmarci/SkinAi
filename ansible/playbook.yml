@@ -1,0 +1,42 @@
+---
+- name: Install Flask, python-dotenv, google-generativeai, markdown on EC2 instance
+  hosts: all
+  become: yes  
+
+  tasks:
+    - name: Update yum cache
+      ansible.builtin.yum:
+        update_cache: yes
+      when: ansible_facts['os_family'] == 'RedHat'
+      ignore_errors: yes
+
+    - name: Update yum cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == 'Debian'
+      ignore_errors: yes
+
+    - name: Install Python3 and pip3
+      ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Install required Python packages via pip
+      ansible.builtin.pip:
+        name:
+          - Flask
+          - python-dotenv
+          - google-generativeai
+          - markdown
+        executable: pip3  
+
+    - name: Verify Flask installation
+      ansible.builtin.command: python3 -m flask --version
+      register: flask_version
+      ignore_errors: yes
+
+    - name: Show Flask version
+      ansible.builtin.debug:
+        var: flask_version.stdout
