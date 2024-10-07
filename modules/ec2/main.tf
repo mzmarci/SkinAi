@@ -9,7 +9,7 @@ resource "aws_instance" "skinai" {
   user_data                   = var.user_data
 
   tags = {
-    Name = "SkinAi"
+    Name = "Skinscan"
     Unit = "PROD"
   }
 }

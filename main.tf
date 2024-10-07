@@ -18,7 +18,7 @@ module "Ec2" {
   //ec2_instance_type      = var.ec2_instance_type == "prod" ? "t2.micro" : "t3.medium"
   ec2_instance_type      = var.ec2_instance_type == "prod" ? "t2.micro" : "t2.micro"
   ec2_key_name           = var.ec2_key_name == "prod" ? "test100" : "assign1"
-  vpc_security_group_ids = [module.security_group.skinai_security_group_id]
+  vpc_security_group_ids = [module.security_group.alb_security_group_id]
   private_subnets_id     = module.mainvpc.private_subnets_id[*] # Use private subnets
 }
 
@@ -50,7 +50,7 @@ module "alb_asg" {
   vpc_id                 = module.mainvpc.vpc_id
   ec2_security_group_ids = [module.security_group.skinai_security_group_id]
   alb_name               = "my-app-alb"
-  alb_security_group_ids = [module.security_group.skinai_security_group_id]
-  instance_tag_name = "my-app-instance"
-  target_group_name = "my-app-target-group"
+  alb_security_group_ids = [module.security_group.alb_security_group_id]
+  instance_tag_name      = "my-app-instance"
+  target_group_name      = "my-app-target-group"
 }

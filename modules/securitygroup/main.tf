@@ -30,3 +30,70 @@ resource "aws_security_group" "skinai_security_group" {
     Name = "skinai"
   }
 }
+
+resource "aws_security_group" "lb_security_group" {
+  name        = "lb_security_group"
+  description = "Allow SSH and HTTP Connection"
+  vpc_id      = var.vpc_id
+  tags = {
+    Name = "skin-test"
+  }
+}
+
+resource "aws_security_group_rule" "lb-igress-rule" {
+  security_group_id        = aws_security_group.lb_security_group.id
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.web_security_group.id
+}
+
+resource "aws_security_group_rule" "lb-igress-rule1" {
+  security_group_id        = aws_security_group.lb_security_group.id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.web_security_group.id
+
+}
+
+resource "aws_security_group_rule" "lb-egress-rule" {
+  security_group_id = aws_security_group.lb_security_group.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+
+}
+
+resource "aws_security_group" "web_security_group" {
+  name        = "web_security_group"
+  description = "Allow SSH and HTTP Connection"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "skin-Web"
+  }
+}
+// source_security_group_id =   aws_security_group.baston.id
+resource "aws_security_group_rule" "web-igress-rule" {
+  security_group_id        = aws_security_group.web_security_group.id
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  self                     = true # Allows traffic from instances with the same security group
+}
+
+resource "aws_security_group_rule" "web-egress-rule" {
+  security_group_id = aws_security_group.web_security_group.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+
+}
